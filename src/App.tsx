@@ -1,6 +1,6 @@
 import React from 'react';
 import { Theme, presetGpnDefault } from '@consta/uikit/Theme';
-import { Bar } from '@consta/charts/Bar';
+import { Bullet } from '@consta/charts/Bullet';
 
 // Типы массивов
 type Item = {
@@ -11,13 +11,12 @@ type Item = {
 }
 // Описал тип объекта внутри нового массива
 type ItemChart = {
-  range: number
-  length : number
-  info: string
-  id: number
-  background: string
-  value: number
+  title: string
+  ranges: number[]
+  measures: number[]
+  target : number 
 }
+
 // Исходные данные
 const data: Item[] = [
   {
@@ -57,48 +56,43 @@ const data: Item[] = [
 
 const App = () => {
   let arr = [];// Создаю пустой массив, в который буду класть преобразованные данные из исходных
+  let arrObj = {};
   for (let i = 0;  i<data.length;i++){
       let dFrom= new Date (data[i].dateFrom);
       let dTo = new Date (data[i].dateTo);
-      let idArr = data[i].id; //Идентификатор графика
-      let backColor= data[i].background; // Цвет графика из исходных данных
-      const dataRange = Math.ceil(Math.abs(new Date(data[4].dateTo).getTime() - new Date(data[0].dateFrom).getTime()) / (1000 * 3600 *24 * 365)); // Длина периода (в днях)
-      const dataLength: number = Math.ceil(Math.abs(dTo.getTime() - dFrom.getTime()) / (1000 * 3600 * 24 )); //Длина периода (кол-во дней)
-      const dataString: string = dFrom + ' - ' + dTo; //Информационная переменная "с какой даты по какую"
+      const dataRange = [140]; // Длина периода (в днях) Для каждого объекта одинакова
+      let arrDFrom : number = Math.ceil(Math.abs(dFrom.getTime() / (1000 * 3600 * 24 *365 )));
+      let arrDTo : number = Math.ceil(Math.abs(dTo.getTime() / (1000 * 3600 * 24 * 365 )));
+      let start: number = 0; // Начальная точка  для графика
+
+      const dataMesures = [start, arrDFrom, arrDTo ];  //Массив с данными для стартовых точек графика
+      const dataString: string = dFrom + '' + dTo; //Информационная переменная "с какой даты по какую"
       
       // Кладу все в объект
       let arrObj: ItemChart = {
-        range: dataRange,
-        length: dataLength,
-        info : dataString,
-        id: idArr,
-        background: backColor,
-        value : dataLength,
+        title: dataString,
+        ranges: dataRange,
+        measures: dataMesures,
+        target : dataRange[0],
       };
       //Добавляю объекты в новый массив, на основе которого строится гистограмма
       arr.push(arrObj);
-      arr.sort((a, b) => a.length - b.length); // Отсортировал в порядке возрастания
   }
+  
   return (
+  <div className='container'>
     <Theme preset={presetGpnDefault}>
-      <Bar
-        style={{ marginBottom: 'var(--space-m)' }}
-          data={arr}
-          xField="length"
-          yField="range"
-          isStack
-          seriesField="info"
-          isGroup
-          label={{
-            position: 'middle',
-            layout: [
-              { type: 'interval-adjust-position' },
-              { type: 'interval-hide-overlap' },
-              { type: 'adjust-color' },
-            ],
-          }}
-      />
+      <Bullet
+      data={arr}
+      measureField="measures"
+      rangeField="ranges"
+      targetField="target"
+      xField="title"
+      
+    />
+
     </Theme>
+  </div>
     )
   
 }
