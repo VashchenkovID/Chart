@@ -88,7 +88,15 @@ const App = () => {
       rangeField="ranges"
       targetField="target"
       xField="title"
-      
+      label={{
+        measure: {
+          position: 'middle',
+          style: {
+            fill: '#fff',
+            
+          },
+        },
+      }}
     />
 
     </Theme>
